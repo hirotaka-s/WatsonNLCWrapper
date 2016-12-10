@@ -1,0 +1,2 @@
+include nlc_api_wrapper/version.py
+include requirements.txt
