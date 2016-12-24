@@ -33,24 +33,23 @@ class NLC(object):
         :param language: The language og the input data
         :return: A instance object with the classifier_id of the newly created classifier, still in traning
         """
-        _create_result = None
+        create_result = None
 
         if isinstance(traning_data, file): # traning_data is file discripter
-            _create_result = self.__nlc.create(traning_data, name=name, language=language)
+            create_result = self.__nlc.create(traning_data, name=name, language=language)
         elif isinstance(traning_data, str): # traning_data is file path
             with open(traning_data, "r") as traning_data_csv:
-                _create_result = self.__nlc.create(traning_data_csv, name=name, language=language)
+                create_result = self.__nlc.create(traning_data_csv, name=name, language=language)
 
-        return CreateResult(_create_result)
+        return CreateResult(create_result)
 
     def classifiers(self):
-        _classifiers_raw = self.__nlc.list()
-        _classifiers = [Classifier(c) for c in _classifiers_raw['classifiers']]
-        #return Classifiers(_classifiers, _classifiers_raw)
-        return Classifiers(_classifiers)
+        classifiers_raw = self.__nlc.list()
+        classifiers_ = [Classifier(c) for c in classifiers_raw['classifiers']]
+        return Classifiers(classifiers_)
 
     def status(self, classifier_id):
-        return State(self.__nlc.status(classifier_id))
+        return Status(self.__nlc.status(classifier_id))
 
     def classify(self, classifier_id, text):
         return ClassifyResult(self.__nlc.classify(classifier_id, text))
@@ -64,13 +63,13 @@ class NLC(object):
         return self.__nlc.remove(classifier_id)
 
     def remove_all(self):
-        _classifiers = self.classifiers()
-        return [self.remove(c.classifier_id) for c in _classifiers]
+        classifiers_ = self.classifiers()
+        return [self.remove(c.classifier_id) for c in classifiers_]
 
 
-class State(DotAccessibleDict):
-    def __init__(self, _status):
-        super(State, self).__init__(_status)
+class Status(DotAccessibleDict):
+    def __init__(self, status):
+        super(Status, self).__init__(status)
 
 
 class Classifier(DotAccessibleDict):
