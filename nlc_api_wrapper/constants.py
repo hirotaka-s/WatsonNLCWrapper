@@ -1,1 +1,5 @@
 DEFAULT_CREDENTIAL_PATH = '~/.config/watson/nlc/credentials.json'
+DATA_ENCODE = 'utf-8'
+MIN_RECODES = 5
+MAX_RECODES = 15000
+MAX_TEXT_LENGTH = 1024
