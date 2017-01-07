@@ -1,3 +1,8 @@
+import csv
+from io import open
+
+from .constants import MIN_RECODES, MAX_RECODES
+
 class DotAccessibleDict(dict):
     def __init__(self, dict_):
         super(DotAccessibleDict, self).__init__(dict_.items())
@@ -20,3 +25,24 @@ class DotAccessibleDict(dict):
     def __delitem__(self, key):
         super(DotAccessibleDict, self).__delitem__(key)
         del self.__dict__[key]
+
+
+class TraningDataSizeLimitationException(Exception):
+    pass
+
+
+def is_valid_recode_num(file_):
+    reader = csv.reader(file_)
+    recode_num = sum(1 if len(recode) > 1 else 0 for recode in reader)
+    
+    if not MIN_RECODES <= recode_num:
+        raise TraningDataSizeLimitationException(
+                'Data too small, Description: The number of traning entries = %s, ' \
+                'witch is smaller than the required mininum of %s' %(recode_num, MIN_RECODES))
+    elif not recode_num <= MAX_RECODES:
+        raise TraningDataSizeLimitationException(
+                'Too many data instances, Description: The number of traning entries = %s,' \
+                ' witch is larger than the permitted maximum of %s' %(recode_num, MAX_RECODES))
+
+    file_.seek(0)
+    return file_
