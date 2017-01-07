@@ -4,12 +4,12 @@ from setuptools import find_packages
 
 def _get_version():
     root_dir = os.path.abspath(os.path.dirname(__file__))
-    with open(os.path.join(root_dir, 'nlc_api_wrapper', 'version.py')) as f:
+    with open(os.path.join(root_dir, 'watson_nlc_wrapper', 'version.py')) as f:
         exec(f.read())
         return __version__
 
 setup(
-    name = "NLC API Wrapper",
+    name = "Watson NLC Wrapper",
     version = _get_version(),
     description = "",
     long_description = "",
