@@ -6,11 +6,12 @@ import os
 import json
 
 from six.moves import UserList
+from io import IOBase, open
 
 from watson_developer_cloud import NaturalLanguageClassifierV1 as NaturalLanguageClassifier
 
 from .constants import DEFAULT_CREDENTIAL_PATH
-from .utils import DotAccessibleDict
+from .utils import DotAccessibleDict, is_valid_recode_num
 
 class NLC(object):
     def __init__(self, credential_file_path=None):
@@ -35,11 +36,12 @@ class NLC(object):
         """
         create_result = None
 
-        if isinstance(traning_data, file): # traning_data is file discripter
+        if isinstance(traning_data, file) or isinstance(traning_data, IOBase): # traning_data is file discripter
             create_result = self.__nlc.create(traning_data, name=name, language=language)
         elif isinstance(traning_data, str): # traning_data is file path
-            with open(traning_data, "r") as traning_data_csv:
-                create_result = self.__nlc.create(traning_data_csv, name=name, language=language)
+            with open(traning_data, newline=None, mode='r', encoding='utf-8') as csv_file:
+                if is_valid_recode_num(csv_file):
+                    create_result = self.__nlc.create(csv_file, name=name, language=language)
 
         return CreateResult(create_result)
 
@@ -82,14 +84,17 @@ class Classifiers(UserList):
         super(Classifiers, self).__init__(classifiers)
 
     def get_classifiers_by_name(self, name):
-        return filter(lambda c: c.name == name, self.data)
+        return filter(lambda c: c.name == name, self)
 
     def get_classifier_by_id(self, classifier_id):
-        item = filter(lambda c: c.classifier_id == classifier_id, self.data)
+        item = filter(lambda c: c.classifier_id == classifier_id, self)
         if not item:
             raise KeyError(classifier_id)
         
         return item[0]
+
+    def to_json(self, *args, **kwargs):
+        return json.dumps([c for c in self], *args, **kwargs)
 
 
 class ClassifyResult(DotAccessibleDict):
